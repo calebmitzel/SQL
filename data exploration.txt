@@ -1,0 +1,129 @@
+SQL CODE FOR DATABASE INTEGRATION
+
+-- Creates a table in our database to import data from our kaggle source
+-- https://www.kaggle.com/datasets/ashishsahani/hospital-admissions-data/data?select=HDHI+Admission+data.csv
+
+CREATE TABLE public.heart_data
+(SNO TEXT,
+MRD_No TEXT,
+DOA TEXT,
+DOD TEXT,
+AGE INT,
+GENDER TEXT,
+RURAL TEXT,
+TYPE_OF_ADMISSION TEXT,
+MONTH_YEAR TEXT,
+DURATION_OF_STAY INT,
+DURATION_OF_INTENSIVE_UNIT_STAY INT,
+OUTCOME TEXT,
+SMOKING TEXT,
+ALCOHOL TEXT,
+DM TEXT,
+HTN TEXT,
+CAD TEXT,
+PRIOR_CMP TEXT,
+CKD TEXT,
+HB TEXT,
+TLC TEXT,
+PLATELETS TEXT,
+GLUCOSE TEXT,
+UREA TEXT,
+CREATININE TEXT,
+BNP TEXT,
+RAISED_CARDIAC_ENZYMES TEXT,
+EF TEXT,
+SEVERE_ANAEMIA TEXT,
+ANAEMIA TEXT,
+STABLE_ANGINA TEXT,
+ACS TEXT,
+STEMI TEXT,
+ATYPICAL_CHEST_PAIN TEXT,
+HEART_FAILURE TEXT,
+HFREF TEXT,
+HFNEF TEXT,
+VALVULAR TEXT,
+CHB TEXT,
+SSS TEXT,
+AKI TEXT,
+CVA_INFRACT TEXT,
+CVA_BLEED TEXT,
+AF TEXT,
+VT TEXT,
+PSVT TEXT,
+CONGENITAL TEXT,
+UTI TEXT,
+NEURO_CARDIOGENIC_SYNCOPE TEXT,
+ORTHOSTATIC TEXT,
+INFECTIVE_ENDOCARDITIS TEXT,
+DVT TEXT,
+CARDIOGENIC_SHOCK TEXT,
+SHOCK TEXT,
+PULMONARY_EMBOLISM TEXT,
+CHEST_INFECTION TEXT
+);
+
+-- Import function is used in pgAdmin 4 to load data into newly created table
+
+-- Data is explored for cleaning: 
+
+-- Detects duplicate values
+
+SELECT *, 
+CASE 
+    WHEN ROW_NUMBER() OVER (PARTITION BY mrd_no, doa, dod ORDER BY sno ASC) > 1 
+    THEN 'Duplicate' 
+    ELSE 'Unique' 
+END AS duplicate_status 
+FROM heart_data;
+
+-- Detects null values
+
+select age
+from heart_data
+where age IS NULL;
+
+select gender
+from heart_data
+where gender IS NULL;
+
+select duration_of_stay
+from heart_data
+where duration_of_stay IS NULL;
+
+select dm
+from heart_data
+where dm IS NULL;
+
+select htn
+from heart_data
+where htn IS NULL;
+
+-- Detects outliers
+
+select distinct
+age from heart_data
+order by age asc;
+
+select distinct
+gender from heart_data;
+
+select distinct
+duration_of_stay from heart_data
+order by duration_of_stay desc;
+
+SELECT * 
+FROM
+(SELECT
+	duration_of_stay,
+	(duration_of_stay - AVG(duration_of_stay) OVER ())/STDDEV(duration_of_stay) OVER() AS z_score
+FROM heart_data) AS score_table
+WHERE z_score > 3 OR z_score <-3
+ORDER BY z_score ASC;
+
+select distinct
+dm from heart_data;
+
+select distinct
+htn from heart_data;
+
+

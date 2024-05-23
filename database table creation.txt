@@ -1,0 +1,40 @@
+SAMPLE DATABASE CREATION WITH A BASIC JOIN
+
+-- Data is sourced from fictional medical data generated for use in WGU's MSDA program and replication in a virtual lab environment
+
+CREATE TABLE medical_services
+(patient_id TEXT NOT NULL,
+services TEXT NOT NULL,
+overweight TEXT NOT NULL,
+arthritis TEXT NOT NULL,
+diabetes TEXT NOT NULL,
+hyperlipidemia TEXT NOT NULL,
+back_pain TEXT NOT NULL,
+anxiety TEXT NOT NULL,
+allergic_rhinitis TEXT NOT NULL,
+reflux_esophagitis TEXT NOT NULL,
+asthma TEXT NOT NULL,
+PRIMARY KEY (patient_id)
+);
+
+COPY public.medical_services (patient_id, services, overweight, arthritis, diabetes, hyperlipidemia, back_pain, anxiety, allergic_rhinitis, reflux_esophagitis, asthma) FROM 'C:/LabFiles/Medical/MSERVI~1.CSV' DELIMITER ',' CSV;
+
+SELECT *
+
+FROM medical_services;
+
+SELECT *
+
+FROM patient;
+
+SELECT p.patient_id, p.age, p.readmis, m.back_pain
+
+FROM patient AS p
+
+INNER JOIN medical_services AS m
+
+ON p.patient_id = m.patient_id
+
+WHERE readmis = 'Yes' AND back_pain = 'Yes'
+
+ORDER BY age;
